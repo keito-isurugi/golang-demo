@@ -10,3 +10,8 @@ services:
       MYSQL_PASSWORD: 'test'
       MYSQL_ROOT_PASSWORD: 'roottest'
       MYSQL_DATABASE: 'golang_demo'
+    volumes:
+     - golang-demo-volume:/var/lib/mysql
+
+volumes:
+  golang-demo-volume:

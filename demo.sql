@@ -1,11 +1,10 @@
-CREATE TABLE `golang_demo`.`players` (
+CREATE TABLE `golang_demo`.`users` (
   `id` INT NOT NULL,
   `name` VARCHAR(255) NULL,
-  `created_at` DATETIME NULL,
-  `updated_at` DATETIME NULL,
-  `deleted_at` DATETIME NULL,
+  `age` INT NULL,
   PRIMARY KEY (`id`));
 
-	insert into players (id, name) values(1, "yamada");
+	insert into users (id, name, age) values(1, "yamada", 30);
 	
-	select * from players
+	select * from users;
+  

@@ -3,8 +3,8 @@ package main
 import (
 	// "encoding/json"
 	"fmt"
-	"log"
-	"net/http"
+	// "log"
+	// "net/http"
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -12,79 +12,13 @@ import (
 	godotnev "github.com/joho/godotenv"
 )
 
-type Player struct {
-	// gorm.Model
-	Id int
+type User struct {
+	ID   int
 	Name string
+	Age  int
 }
 
-// var player Player
-// var players []Player
-
-
-
-// type Article struct {
-// 	Title string `json: "Title"`
-// 	Desc string `json: "desc"`
-// 	Content string `json: "content"`
-// }
-
-// type Articles []Article
-
-func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Welcome to tha HomaPage!")
-	fmt.Println("Endpoint Hit: homePage")
-}
-
-func handleReauests() {
-	http.HandleFunc("/", homePage)
-	// http.HandleFunc("/articles", returnAllArticles)
-	// http.HandleFunc("/players", fetchPlayers)
-	log.Fatal(http.ListenAndServe(":8081", nil))
-}
-
-// func fetchPlayers(w http.ResponseWriter, r *http.Request) {
-// 	db := GetDbConn()
-
-// 	db.Find(&players)
-// 	fmt.Println(players)
-// 	profJson, _ := json.Marshal(players)
-// 	fmt.Fprintf(w, string(profJson))
-// }
-
-// func GetDbConn() *gorm.Db {
-// 	db, err := gorm.Open(GetDBConfig())
-// 	if err != nil {panic(err)}
-
-// 	db.LogModel(true)
-// 	return db
-// }
-
-// func GetDBConfig() (string, string) {
-// 	DBMS := "mysql"
-// 	USER := "test"
-// 	PASS := "test"
-// 	PROTOCOL := ""
-// 	DBNAME := "golang_test"
-// 	OPTION := "charset=utf8&parseTime=True&loc=Local"
-// 	CONNECT := USER + ":" + PASS + "@" + PROTOCOL + "/" + DBNAME + "?" + OPTION
-
-// 	return DBMS, CONNECT
-// }
-
-// func returnAllArticles(w http.ResponseWriter, r *http.Request) {
-// 	articles := Articles{}
-// 	for i := 0; i < 10; i++ {
-// 			title := "Hello_%d"
-// 			articles = append(
-// 					articles,
-// 					Article{Title: fmt.Sprintf(title, i), Desc: "Article Description", Content: "Article Content"})
-// 	}
-// 	fmt.Println("Endpoint Hit: returnAllArticles")
-// 	json.NewEncoder(w).Encode(articles)
-// }
-
-
+type Users User
 
 func main() {
 	// ENV読み取り
@@ -97,7 +31,7 @@ func main() {
 	DBMS := "mysql"
 	USER := os.Getenv("DB_USER")
 	PASS := os.Getenv("DB_PASS")
-	// (localhost:3306ではなく) (コンテナ名:3306)
+	// (localhost:3306ではなく)
 	HOST := "tcp(localhost:3306)"
 	DBNAME := os.Getenv("DB_NAME")
 
@@ -109,12 +43,36 @@ func main() {
 		panic(err.Error())
 	}
 
-	// var player Player
-	var players []Player
+	// データ取得
+	var user User
+	// db.First(&user)
+	// fmt.Println(user)
 
-	db.Find(&players)
-	defer db.Close()
+	// var users []Users
+	// db.Find(&users)
+	// defer db.Close()
+	// fmt.Print(users)
 
-	fmt.Print(players)
-	handleReauests()
+	// データ登録
+	// for i := 4; i <= 10; i++ {
+	// 	user := User{ID: i, Name: fmt.Sprint("渡辺_", i), Age: 10 + i}
+	// 	db.Create(&user)
+	// }
+	// user := User{ID: 3, Name: "suzuki", Age: 18}
+	// result := db.Create(&user)
+
+	// fmt.Println(result.Error)
+	// fmt.Println(user.ID)
+	// fmt.Println(result.RowsAffected)
+
+	// レコードの更新
+		// user.ID = 1
+		// user.Name = "jinzhu 2"
+		// user.Age = 100
+		// db.Save(&user)
+		
+		// db.Model(&User{}).Where("id = ?", 1).Update("name", "hello")
+		
+		// データ削除
+		db.Where("name = ?", "渡辺_4").Delete(&user)
 }
