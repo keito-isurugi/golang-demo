@@ -1,8 +1,8 @@
 version: '3.8'
 services:
-  reload_test:
-    image: reload_test
-    container_name: reload_test
+  golang_demo:
+    image: golang_demo
+    container_name: golang_demo
     build: .
     ports:
       - 8080:8080
