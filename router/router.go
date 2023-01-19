@@ -38,8 +38,8 @@ func handleReauests() {
 
 func Router() {
 	fmt.Println("router!!")
-	http.HandleFunc("/", homePage)
+	// http.HandleFunc("/", homePage)
 	// http.HandleFunc("/articles", returnAllArticles)
 	// http.HandleFunc("/players", fetchPlayers)
-	log.Fatal(http.ListenAndServe(":8081", nil))
+	// log.Fatal(http.ListenAndServe(":8081", nil))
 }
