@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"golang_demo/db"
 	// "os"
 	// _ "github.com/go-sql-driver/mysql"
 	// gorm "github.com/jinzhu/gorm"
@@ -13,17 +14,18 @@ import (
 )
 
 
-
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to tha HomaPage!")
 	fmt.Println("Endpoint Hit: homePage")
 }
-
-func handleReauests() {
-	http.HandleFunc("/", homePage)
-	// http.HandleFunc("/articles", returnAllArticles)
-	// http.HandleFunc("/players", fetchPlayers)
-	log.Fatal(http.ListenAndServe(":8081", nil))
+func dbMigrate(w http.ResponseWriter, r *http.Request) {
+	db.InitDB()
+}
+func dbSeedUser(w http.ResponseWriter, r *http.Request) {
+	db.SeedUser()
+}
+func dbSeedTodo(w http.ResponseWriter, r *http.Request) {
+	db.SeedTodo()
 }
 
 // func returnAllArticles(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +46,10 @@ func Router() {
 	// fmt.Println("router!!")
 	http.HandleFunc("/", homePage)
 	http.HandleFunc("/users/", UserHandler)
-	// http.HandleFunc("/articles", returnAllArticles)
+	
+	http.HandleFunc("/db/migrate", dbMigrate)
+	http.HandleFunc("/db/seed/user", dbSeedUser)
+	http.HandleFunc("/db/seed/todo", dbSeedTodo)
 	// http.HandleFunc("/players", fetchPlayers)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

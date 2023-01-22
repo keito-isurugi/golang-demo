@@ -1,25 +1,52 @@
 package db
 
 import (
-	// "encoding/json"
 	"fmt"
-	// "log"
 	"os"
-
+	"github.com/jinzhu/gorm"
 	_ "github.com/go-sql-driver/mysql"
-	gorm "github.com/jinzhu/gorm"
 	godotnev "github.com/joho/godotenv"
+	"golang_demo/models"
 )
 
-type User struct {
-	ID   int
-	Name string
-	Age  int
+var db *gorm.DB
+
+// type User struct {
+//   gorm.Model
+// 	id int `gorm:"primary_key"`
+//   Name  string
+// }
+
+func InitDB() {
+	connectDB()
+	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.Todo{})
+	fmt.Println("migrate success!")
 }
 
-type Users User
+func SeedUser() {
+	connectDB()
+	var user models.User
+	for i := 0; i < 10; i++ {
+		user = models.User{Name: fmt.Sprintf("user_%v", i)}
+		db.Create(&user)
+	}
+	defer db.Close()
+	fmt.Println("seeder success!")
+}
 
-func Db() {
+func SeedTodo() {
+	connectDB()
+	var todo models.Todo
+	for i := 0; i < 10; i++ {
+		todo = models.Todo{Title: fmt.Sprintf("タイトル_%v", i), Content: fmt.Sprintf("内容_%v", i)}
+		db.Create(&todo)
+	}
+	defer db.Close()
+	fmt.Println("seeder success!")
+}
+
+func connectDB() {
 	// ENV読み取り
 	err := godotnev.Load(".env")
 	if err != nil {
@@ -31,47 +58,15 @@ func Db() {
 	USER := os.Getenv("DB_USER")
 	PASS := os.Getenv("DB_PASS")
 	// (localhost:3306ではなく)
-	HOST := "tcp(localhost:3306)"
+	HOST := "tcp(golang_demo_db:3306)"
 	DBNAME := os.Getenv("DB_NAME")
 
 	CONNECT := USER + ":" + PASS + "@" + HOST + "/" + DBNAME
-
 	// DBに接続
-	db, err := gorm.Open(DBMS, CONNECT)
+	db, err = gorm.Open(DBMS, CONNECT)
 	if err != nil {
 		panic(err.Error())
 	}
-
-	// データ取得
-	var user User
-	// db.First(&user)
-	// fmt.Println(user)
-
-	// var users []Users
-	// db.Find(&users)
-	// defer db.Close()
-	// fmt.Print(users)
-
-	// データ登録
-	// for i := 4; i <= 10; i++ {
-	// 	user := User{ID: i, Name: fmt.Sprint("渡辺_", i), Age: 10 + i}
-	// 	db.Create(&user)
-	// }
-	// user := User{ID: 3, Name: "suzuki", Age: 18}
-	// result := db.Create(&user)
-
-	// fmt.Println(result.Error)
-	// fmt.Println(user.ID)
-	// fmt.Println(result.RowsAffected)
-
-	// レコードの更新
-		// user.ID = 1
-		// user.Name = "jinzhu 2"
-		// user.Age = 100
-		// db.Save(&user)
-		
-		// db.Model(&User{}).Where("id = ?", 1).Update("name", "hello")
-		
-		// データ削除
-		db.Where("name = ?", "渡辺_4").Delete(&user)
+	// db.Close()
+	fmt.Println("ok!")
 }
