@@ -7,13 +7,14 @@ import (
 	// "net/http"
 
 	_ "github.com/go-sql-driver/mysql"
-	"golang_demo/router"
+	// "golang_demo/router"
 	// "golang_demo/db"
+	"golang_demo/models"
 )
 
 func main() {
-	router.Router()
-	// db.Db()
+	// router.Router()
+	models.InitDB()
 }
 
 
