@@ -1,6 +1,7 @@
 package db
 
 import (
+	// "encoding/json"
 	"fmt"
 	"os"
 	"github.com/jinzhu/gorm"
@@ -11,19 +12,43 @@ import (
 
 var db *gorm.DB
 
-// type User struct {
-//   gorm.Model
-// 	id int `gorm:"primary_key"`
-//   Name  string
-// }
+// db接続
+func connectDB() {
+	// ENV読み取り
+	err := godotnev.Load(".env")
+	if err != nil {
+		fmt.Printf("読み込みに失敗しました: %v", err)
+	}
 
-func InitDB() {
+	// 接続情報を設定
+	DBMS := "mysql"
+	USER := os.Getenv("DB_USER")
+	PASS := os.Getenv("DB_PASS")
+	// (localhost:3306ではなく)
+	HOST := "tcp(golang_demo_db:3306)"
+	DBNAME := os.Getenv("DB_NAME")
+
+	CONNECT := USER + ":" + PASS + "@" + HOST + "/" + DBNAME + "?parseTime=true"
+	// DBに接続
+	db, err = gorm.Open(DBMS, CONNECT)
+	if err != nil {
+		panic(err.Error())
+	}
+	// db.Close()
+	fmt.Println("ok!")
+}
+
+
+// マイグレーション
+func Migrate() {
 	connectDB()
 	db.AutoMigrate(&models.User{})
 	db.AutoMigrate(&models.Todo{})
 	fmt.Println("migrate success!")
 }
 
+
+// データ登録
 func SeedUser() {
 	connectDB()
 	var user models.User
@@ -46,27 +71,19 @@ func SeedTodo() {
 	fmt.Println("seeder success!")
 }
 
-func connectDB() {
-	// ENV読み取り
-	err := godotnev.Load(".env")
-	if err != nil {
-		fmt.Printf("読み込みに失敗しました: %v", err)
-	}
-
-	// 接続情報を設定
-	DBMS := "mysql"
-	USER := os.Getenv("DB_USER")
-	PASS := os.Getenv("DB_PASS")
-	// (localhost:3306ではなく)
-	HOST := "tcp(golang_demo_db:3306)"
-	DBNAME := os.Getenv("DB_NAME")
-
-	CONNECT := USER + ":" + PASS + "@" + HOST + "/" + DBNAME
-	// DBに接続
-	db, err = gorm.Open(DBMS, CONNECT)
-	if err != nil {
-		panic(err.Error())
-	}
-	// db.Close()
-	fmt.Println("ok!")
+func GetUsers() []models.User{
+	var users []models.User
+	connectDB()
+	db.Find(&users)
+	fmt.Print(users)
+	defer db.Close()
+	return users
+}
+func GetTodos() []models.Todo{
+	var todos []models.Todo
+	connectDB()
+	db.Find(&todos)
+	fmt.Print(todos)
+	defer db.Close()
+	return todos
 }

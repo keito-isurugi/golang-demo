@@ -1,7 +1,7 @@
 package router
 
 import (
-	// "encoding/json"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -19,13 +19,19 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: homePage")
 }
 func dbMigrate(w http.ResponseWriter, r *http.Request) {
-	db.InitDB()
+	db.Migrate()
 }
 func dbSeedUser(w http.ResponseWriter, r *http.Request) {
 	db.SeedUser()
 }
 func dbSeedTodo(w http.ResponseWriter, r *http.Request) {
 	db.SeedTodo()
+}
+func getUsersHndler(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(db.GetUsers())
+}
+func getTodosHndler(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(db.GetTodos())
 }
 
 // func returnAllArticles(w http.ResponseWriter, r *http.Request) {
@@ -45,7 +51,8 @@ func Router() {
 	// http.ListenAndServe(":8080", r)
 	// fmt.Println("router!!")
 	http.HandleFunc("/", homePage)
-	http.HandleFunc("/users/", UserHandler)
+	http.HandleFunc("/users/", getUsersHndler)
+	http.HandleFunc("/todos/", getTodosHndler)
 	
 	http.HandleFunc("/db/migrate", dbMigrate)
 	http.HandleFunc("/db/seed/user", dbSeedUser)
