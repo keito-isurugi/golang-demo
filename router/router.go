@@ -7,10 +7,11 @@ import (
 	"net/http"
 	"strings"
 	"golang_demo/db"
+	// "golang_demo/middleware"
 	// "os"
 	// _ "github.com/go-sql-driver/mysql"
 	// gorm "github.com/jinzhu/gorm"
-	// godotnev "github.com/joho/godotenv"
+		// godotnev "github.com/joho/godotenv"
 )
 
 
@@ -33,26 +34,51 @@ func getUsersHndler(w http.ResponseWriter, r *http.Request) {
 func getTodosHndler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(db.GetTodos())
 }
+func registerTodoHndler(w http.ResponseWriter, r *http.Request) {
+	db.RegisterTodo()
+}
 
-// func returnAllArticles(w http.ResponseWriter, r *http.Request) {
-// 	articles := Articles{}
-// 	for i := 0; i < 10; i++ {
-// 			title := "Hello_%d"
-// 			articles = append(
-// 					articles,
-// 					Article{Title: fmt.Sprintf(title, i), Desc: "Article Description", Content: "Article Content"})
-// 	}
-// 	fmt.Println("Endpoint Hit: returnAllArticles")
-// 	json.NewEncoder(w).Encode(articles)
-// }
+
+func aboutHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("This is midlleware test!!")
+}
+func middleware1(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+			fmt.Println("[START] middleware1")
+			next.ServeHTTP(w, r)
+			fmt.Println("[END] middleware1")
+	}
+}
+
+
+// セッションの確認
+func CORS(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// クロスオリジン用にセット
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Methods","GET,PUT,POST,DELETE,UPDATE,OPTIONS")
+    w.Header().Set("Content-Type", "application/json")
+
+		// preflight用に200でいったん返す
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		next.ServeHTTP(w, r)
+	}
+}
 
 func Router() {
 	// r := NewRouter()
 	// http.ListenAndServe(":8080", r)
 	// fmt.Println("router!!")
 	http.HandleFunc("/", homePage)
-	http.HandleFunc("/users/", getUsersHndler)
-	http.HandleFunc("/todos/", getTodosHndler)
+	http.HandleFunc("/api/users/", getUsersHndler)
+	http.HandleFunc("/api/todo/list", CORS(getTodosHndler))
+	// http.HandleFunc("/api/todo/list", getTodosHndler)
+	http.HandleFunc("/api/todo/register", registerTodoHndler)
 	
 	http.HandleFunc("/db/migrate", dbMigrate)
 	http.HandleFunc("/db/seed/user", dbSeedUser)

@@ -71,11 +71,12 @@ func SeedTodo() {
 	fmt.Println("seeder success!")
 }
 
+
+// データ取得
 func GetUsers() []models.User{
 	var users []models.User
 	connectDB()
 	db.Find(&users)
-	fmt.Print(users)
 	defer db.Close()
 	return users
 }
@@ -83,7 +84,16 @@ func GetTodos() []models.Todo{
 	var todos []models.Todo
 	connectDB()
 	db.Find(&todos)
-	fmt.Print(todos)
 	defer db.Close()
 	return todos
+}
+
+// データ登録
+func RegisterTodo() {
+	fmt.Println("Todoを登録します")
+	// var todos []models.Todo
+	// connectDB()
+	// db.Find(&todos)
+	// defer db.Close()
+	// return todos
 }
