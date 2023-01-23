@@ -87,6 +87,13 @@ func GetTodos() []models.Todo{
 	defer db.Close()
 	return todos
 }
+func GetTodo(id int) models.Todo{
+	var todo models.Todo
+	connectDB()
+	db.First(&todo, id)
+	defer db.Close()
+	return todo
+}
 
 type Todo struct {
 	// jsonで型定義

@@ -3,15 +3,16 @@ package router
 import (
 	"encoding/json"
 	"fmt"
+	"golang_demo/db"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
-	"golang_demo/db"
 	// "golang_demo/middleware"
 	// "os"
 	// _ "github.com/go-sql-driver/mysql"
 	// gorm "github.com/jinzhu/gorm"
-		// godotnev "github.com/joho/godotenv"
+	// godotnev "github.com/joho/godotenv"
 )
 
 
@@ -27,6 +28,12 @@ func dbSeedUser(w http.ResponseWriter, r *http.Request) {
 }
 func dbSeedTodo(w http.ResponseWriter, r *http.Request) {
 	db.SeedTodo()
+}
+
+func getTodoHndler(w http.ResponseWriter, r *http.Request) {
+	todoId := strings.TrimPrefix(r.URL.Path, "/api/todo/show/")
+	id, _ := strconv.Atoi(todoId)
+	json.NewEncoder(w).Encode(db.GetTodo(id))
 }
 func getUsersHndler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(db.GetUsers())
@@ -63,6 +70,7 @@ func deleteTodoHndler(w http.ResponseWriter, r *http.Request) {
 		db.DeleteTodo(id.Id)
 	}
 }
+
 
 
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
@@ -103,6 +111,7 @@ func Router() {
 	http.HandleFunc("/", homePage)
 	http.HandleFunc("/api/users/", getUsersHndler)
 	http.HandleFunc("/api/todo/list", CORS(getTodosHndler))
+	http.HandleFunc("/api/todo/show/", CORS(getTodoHndler))
 	http.HandleFunc("/api/todo/register", CORS(registerTodoHndler))
 	http.HandleFunc("/api/todo/delete", CORS(deleteTodoHndler))
 	// http.HandleFunc("/api/todo/register", registerTodoHndler)
