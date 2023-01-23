@@ -34,8 +34,34 @@ func getUsersHndler(w http.ResponseWriter, r *http.Request) {
 func getTodosHndler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(db.GetTodos())
 }
+type Todo struct {
+	// jsonで型定義
+	Title string `json:"title"`
+	Content string `json:"content"`
+}
 func registerTodoHndler(w http.ResponseWriter, r *http.Request) {
-	db.RegisterTodo()
+	if r.Method == "POST" {
+		// 変数を定義
+		var todo Todo
+		// デコードして変数へ値を格納する
+		if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
+			log.Fatal(err)
+		}
+		db.RegisterTodo(todo.Title, todo.Content)
+	}
+}
+
+type TodoId struct {
+	Id int `json:"id"`
+}
+func deleteTodoHndler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		var id TodoId
+		if err := json.NewDecoder(r.Body).Decode(&id); err != nil {
+			log.Fatal(err)
+		}
+		db.DeleteTodo(id.Id)
+	}
 }
 
 
@@ -77,8 +103,9 @@ func Router() {
 	http.HandleFunc("/", homePage)
 	http.HandleFunc("/api/users/", getUsersHndler)
 	http.HandleFunc("/api/todo/list", CORS(getTodosHndler))
-	// http.HandleFunc("/api/todo/list", getTodosHndler)
-	http.HandleFunc("/api/todo/register", registerTodoHndler)
+	http.HandleFunc("/api/todo/register", CORS(registerTodoHndler))
+	http.HandleFunc("/api/todo/delete", CORS(deleteTodoHndler))
+	// http.HandleFunc("/api/todo/register", registerTodoHndler)
 	
 	http.HandleFunc("/db/migrate", dbMigrate)
 	http.HandleFunc("/db/seed/user", dbSeedUser)

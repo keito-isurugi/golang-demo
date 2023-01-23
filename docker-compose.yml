@@ -19,6 +19,8 @@ services:
       MYSQL_PASSWORD: 'test'
       MYSQL_ROOT_PASSWORD: 'roottest'
       MYSQL_DATABASE: 'golang_demo'
+    # cap_add:      # 追加
+    #   - SYS_NICE  # 追加
     volumes:
      - golang-demo-volume:/var/lib/mysql
   phpmyadmin:
