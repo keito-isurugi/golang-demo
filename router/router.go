@@ -43,6 +43,7 @@ func getTodosHndler(w http.ResponseWriter, r *http.Request) {
 }
 type Todo struct {
 	// jsonで型定義
+	Id int `json:"id"`
 	Title string `json:"title"`
 	Content string `json:"content"`
 }
@@ -55,6 +56,15 @@ func registerTodoHndler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 		db.RegisterTodo(todo.Title, todo.Content)
+	}
+}
+func editTodoHndler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		var todo Todo
+		if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
+			log.Fatal(err)
+		}
+		db.EditTodo(todo.Id, todo.Title, todo.Content)
 	}
 }
 
@@ -113,6 +123,7 @@ func Router() {
 	http.HandleFunc("/api/todo/list", CORS(getTodosHndler))
 	http.HandleFunc("/api/todo/show/", CORS(getTodoHndler))
 	http.HandleFunc("/api/todo/register", CORS(registerTodoHndler))
+	http.HandleFunc("/api/todo/edit", CORS(editTodoHndler))
 	http.HandleFunc("/api/todo/delete", CORS(deleteTodoHndler))
 	// http.HandleFunc("/api/todo/register", registerTodoHndler)
 	

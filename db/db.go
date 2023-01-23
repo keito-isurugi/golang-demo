@@ -110,6 +110,16 @@ func RegisterTodo(title string, content string) {
 	fmt.Println("Todoを登録しました")
 }
 
+// データ更新
+func EditTodo(id int, title string, content string) {
+	var todo models.Todo
+	connectDB()
+	db.First(&todo, id)
+	db.Model(&todo).Updates(models.Todo{Title: title, Content: content})
+	defer db.Close()
+	fmt.Println("Todoを更新しました")
+}
+
 // データを削除
 func DeleteTodo(id int) {
 	var todo models.Todo
