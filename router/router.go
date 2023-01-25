@@ -80,9 +80,13 @@ func deleteTodoHndler(w http.ResponseWriter, r *http.Request) {
 		db.DeleteTodo(id.Id)
 	}
 }
+func todoToUserHndler(w http.ResponseWriter, r *http.Request) {
+	db.TodoToUser()
+}
 
 
 
+// ミドルウェア作成
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("This is midlleware test!!")
 }
@@ -125,6 +129,7 @@ func Router() {
 	http.HandleFunc("/api/todo/register", CORS(registerTodoHndler))
 	http.HandleFunc("/api/todo/edit", CORS(editTodoHndler))
 	http.HandleFunc("/api/todo/delete", CORS(deleteTodoHndler))
+	http.HandleFunc("/api/todo_to_user", CORS(todoToUserHndler))
 	// http.HandleFunc("/api/todo/register", registerTodoHndler)
 	
 	http.HandleFunc("/db/migrate", dbMigrate)

@@ -52,7 +52,7 @@ func Migrate() {
 func SeedUser() {
 	connectDB()
 	var user models.User
-	for i := 0; i < 10; i++ {
+	for i := 1; i <= 10; i++ {
 		user = models.User{Name: fmt.Sprintf("user_%v", i)}
 		db.Create(&user)
 	}
@@ -63,8 +63,8 @@ func SeedUser() {
 func SeedTodo() {
 	connectDB()
 	var todo models.Todo
-	for i := 0; i < 10; i++ {
-		todo = models.Todo{Title: fmt.Sprintf("タイトル_%v", i), Content: fmt.Sprintf("内容_%v", i)}
+	for i := 1; i <= 10; i++ {
+		todo = models.Todo{UserID: 1, Title: fmt.Sprintf("タイトル_%v", i), Content: fmt.Sprintf("内容_%v", i)}
 		db.Create(&todo)
 	}
 	defer db.Close()
@@ -83,7 +83,7 @@ func GetUsers() []models.User{
 func GetTodos() []models.Todo{
 	var todos []models.Todo
 	connectDB()
-	db.Find(&todos)
+	db.Preload("User").Find(&todos)
 	defer db.Close()
 	return todos
 }
@@ -125,4 +125,14 @@ func DeleteTodo(id int) {
 	var todo models.Todo
 	connectDB()
 	db.Delete(&todo, id)
+}
+
+// リレーションお試し
+func TodoToUser() {
+	// var todo models.Todo
+	var users []models.User
+	connectDB()
+	db.Preload("Todos").Find(&users)
+	// db.Find(&users)
+	fmt.Println(users)
 }

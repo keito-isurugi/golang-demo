@@ -5,16 +5,21 @@ import (
 )
 
 type User struct {
-	Id int `gorm:"primary_key"`
+	ID int `gorm:"primary_key"`
   Name string
+	Email string
+	Password int
 	CreatedAt time.Time
   UpdatedAt time.Time
+	Todos []Todo
 }
 
 type Todo struct {
-	Id int `gorm:"primary_key"`
-  Title  string
-  Content  string
+	ID int `gorm:"primary_key"`
+	UserID int
+  Title string
+  Content string
 	CreatedAt time.Time
   UpdatedAt time.Time
+	User User
 }
