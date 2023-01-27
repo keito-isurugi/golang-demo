@@ -84,6 +84,22 @@ func GetUsers() []models.User{
 	defer db.Close()
 	return users
 }
+func GetUser(id int) models.User{
+	var user models.User
+	connectDB()
+	db.First(&user, id)
+	defer db.Close()
+	return user
+}
+
+func GetLoginUser(email string, password string) models.User{
+	var user models.User
+	connectDB()
+	db.Where("email = ?", email).Where("password = ?", password).First(&user)
+	defer db.Close()
+	return user
+}
+
 func GetTodos() []models.Todo{
 	var todos []models.Todo
 	connectDB()
