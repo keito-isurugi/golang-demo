@@ -1,11 +1,11 @@
 package main
 
 import (
-	// "fmt"
 	"golang_demo/router"
+	"golang_demo/auth"
 )
 
 func main() {
+	auth.Auth()
 	router.Router()
-	// models.InitDB()
 }

@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	// "golang_demo/middleware"
+	"golang_demo/middleware"
 	// "os"
 	// _ "github.com/go-sql-driver/mysql"
 	// gorm "github.com/jinzhu/gorm"
@@ -84,6 +84,21 @@ func todoToUserHndler(w http.ResponseWriter, r *http.Request) {
 	db.TodoToUser()
 }
 
+type Login struct {
+	// jsonで型定義
+	Email string `json:"email"`
+	Password string `json:"password"`
+}
+func loginHndler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		var login Login
+		if err := json.NewDecoder(r.Body).Decode(&login); err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(db.Login(login.Email, login.Password))
+	}
+}
+
 
 
 // ミドルウェア作成
@@ -98,44 +113,47 @@ func middleware1(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// // CORSエラー回避用ミドルウェア
+// func CORS(next http.HandlerFunc) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		// クロスオリジン用にセット
+// 		w.Header().Set("Access-Control-Allow-Origin", "*")
+// 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+// 		w.Header().Set("Access-Control-Allow-Credentials", "true")
+// 		w.Header().Set("Access-Control-Allow-Methods","GET,PUT,POST,DELETE,UPDATE,OPTIONS")
+//     w.Header().Set("Content-Type", "application/json")
 
-// セッションの確認
-func CORS(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// クロスオリジン用にセット
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
-		w.Header().Set("Access-Control-Allow-Methods","GET,PUT,POST,DELETE,UPDATE,OPTIONS")
-    w.Header().Set("Content-Type", "application/json")
-
-		// preflight用に200でいったん返す
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-		next.ServeHTTP(w, r)
-	}
-}
+// 		// preflight用に200でいったん返す
+// 		if r.Method == "OPTIONS" {
+// 			w.WriteHeader(http.StatusOK)
+// 			return
+// 		}
+// 		next.ServeHTTP(w, r)
+// 	}
+// }
 
 func Router() {
-	// r := NewRouter()
-	// http.ListenAndServe(":8080", r)
-	// fmt.Println("router!!")
 	http.HandleFunc("/", homePage)
+
+	// User
 	http.HandleFunc("/api/users/", getUsersHndler)
-	http.HandleFunc("/api/todo/list", CORS(getTodosHndler))
-	http.HandleFunc("/api/todo/show/", CORS(getTodoHndler))
-	http.HandleFunc("/api/todo/register", CORS(registerTodoHndler))
-	http.HandleFunc("/api/todo/edit", CORS(editTodoHndler))
-	http.HandleFunc("/api/todo/delete", CORS(deleteTodoHndler))
-	http.HandleFunc("/api/todo_to_user", CORS(todoToUserHndler))
-	// http.HandleFunc("/api/todo/register", registerTodoHndler)
+
+	// Todo
+	http.HandleFunc("/api/todo/list", middleware.CORS(getTodosHndler))
+	http.HandleFunc("/api/todo/show/", middleware.CORS(getTodoHndler))
+	http.HandleFunc("/api/todo/register", middleware.CORS(registerTodoHndler))
+	http.HandleFunc("/api/todo/edit", middleware.CORS(editTodoHndler))
+	http.HandleFunc("/api/todo/delete", middleware.CORS(deleteTodoHndler))
+	http.HandleFunc("/api/todo_to_user", middleware.CORS(todoToUserHndler))
+
+	// 認証関係
+	// http.HandleFunc("/api/login", middleware.CORS(loginHndler))
 	
+	// マイグレーション, シード
 	http.HandleFunc("/db/migrate", dbMigrate)
 	http.HandleFunc("/db/seed/user", dbSeedUser)
 	http.HandleFunc("/db/seed/todo", dbSeedTodo)
-	// http.HandleFunc("/players", fetchPlayers)
+
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 

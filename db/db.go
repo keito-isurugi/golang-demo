@@ -53,7 +53,11 @@ func SeedUser() {
 	connectDB()
 	var user models.User
 	for i := 1; i <= 10; i++ {
-		user = models.User{Name: fmt.Sprintf("user_%v", i)}
+		user = models.User{
+			Name: fmt.Sprintf("user_%v", i),
+			Email: fmt.Sprintf("test%v@email.com", i),
+			Password: fmt.Sprintf("test%v", i),
+		}
 		db.Create(&user)
 	}
 	defer db.Close()
@@ -97,7 +101,7 @@ func GetTodo(id int) models.Todo{
 
 type Todo struct {
 	// jsonで型定義
-	Title string `json:"title"`
+Title string `json:"title"`
 	Content string `json:"content"`
 }
 
@@ -135,4 +139,12 @@ func TodoToUser() {
 	db.Preload("Todos").Find(&users)
 	// db.Find(&users)
 	fmt.Println(users)
+}
+
+// ログイン
+func Login(email string, password string) models.User{
+	var user models.User
+	connectDB()
+	db.Where("email = ?", email).Where("password = ?", password).First(&user)
+	return user
 }
