@@ -18,10 +18,10 @@ var secret = []byte("secret")
 
 func Auth() {
 	http.HandleFunc("/api/login", middleware.CORS(loginHndler))
-	http.HandleFunc("/api/auth", middleware.CORS(authHndler))
+	http.HandleFunc("/api/auth_user", middleware.CORS(authUserHndler))
 
 	// log.Println("Listening...")
-	http.ListenAndServe(":8080", nil)
+	// http.ListenAndServe(":8080", nil)
 }
 
 type LoginData struct {
@@ -75,10 +75,10 @@ func login(w http.ResponseWriter, r *http.Request) string{
 }
 
 
-func authHndler(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(auth(w, r))
+func authUserHndler(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(authUser(w, r))
 }
-func auth(w http.ResponseWriter, r *http.Request) models.User{
+func authUser(w http.ResponseWriter, r *http.Request) models.User{
     // クライアントから送られてきたJWTトークンを検証する
     tokenString := r.Header.Get("Authorization")
     token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
