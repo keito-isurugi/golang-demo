@@ -1,6 +1,7 @@
 package main
 
 import (
+	// "fmt"
 	// "golang_demo/router"
 	// "golang_demo/auth"
 	"golang_demo/demo"
@@ -9,5 +10,5 @@ import (
 func main() {
 	// auth.Auth()
 	// router.Router()
-	demo.GoRoutineMain()
+	demo.Hello()
 }

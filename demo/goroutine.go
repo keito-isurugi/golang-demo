@@ -3,8 +3,6 @@ package demo
 import (
 	"fmt"
 	"math/rand"
-	"sync"
-
 	// "sync"
 	"time"
 )
@@ -19,6 +17,20 @@ func GetLuckyNum(c chan <- int) {
 	// fmt.Printf("Today's your lucky number is %d!\n", num)
 
 	c <- num
+}
+
+func ResFunc() <-chan int {
+	result := make(chan int)
+
+	go func() {
+		defer close(result)
+
+		for i := 0; i < 5; i++ {
+			result <- 1
+		}
+	}()
+
+	return result
 }
 
 func GoRoutineMain() {
@@ -51,8 +63,8 @@ func GoRoutineMain() {
 
 	// wg.Wait()
 
-	src := []int{1, 2, 3, 4, 5}
-	dst := []int{}
+	// src := []int{1, 2, 3, 4, 5}
+	// dst := []int{}
 
 	// c := make(chan int)
 	// // srcの要素毎にある何か処理をして、結果をdstにいれる
@@ -71,17 +83,31 @@ func GoRoutineMain() {
 	// 	dst = append(dst, num)
 	// }
 
-	var mu sync.Mutex
+	// var mu sync.Mutex
 
-	for _, s := range src {
-		go func(s int) {
-			result := s * 2
-			mu.Lock()
-			dst = append(dst, result)
-			mu.Unlock()
-		}(s)
-	}
-	time.Sleep(time.Second)
-	fmt.Println(dst)
+	// for _, s := range src {
+	// 	go func(s int) {
+	// 		result := s * 2
+	// 		mu.Lock()
+	// 		dst = append(dst, result)
+	// 		mu.Unlock()
+	// 	}(s)
+	// }
+	// time.Sleep(time.Second)
+	// fmt.Println(dst)
 	// close(c)
+
+	// fmt.Println(ResFunc())
+
+	gen1, gen2 := make(chan int), make(chan int)
+
+	select {
+		case num := <-gen1:  // gen1から受信できるとき
+			fmt.Println(num)
+		case num := <-gen2:  // gen2から受信できるとき
+			fmt.Println(num)
+		default:  // どっちも受信できないとき
+			fmt.Println("neither chan cannot use")
+		}
+
 }
