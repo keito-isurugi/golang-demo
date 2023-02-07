@@ -10,5 +10,5 @@ import (
 func main() {
 	// auth.Auth()
 	// router.Router()
-	demo.Hello()
+	demo.Hoge()
 }
