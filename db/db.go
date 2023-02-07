@@ -3,59 +3,27 @@ package db
 import (
 	// "encoding/json"
 	"fmt"
-	"os"
-	"github.com/jinzhu/gorm"
-	_ "github.com/go-sql-driver/mysql"
-	godotnev "github.com/joho/godotenv"
 	"golang_demo/models"
+
+	_ "github.com/go-sql-driver/mysql"
 )
-
-var db *gorm.DB
-
-// db接続
-func connectDB() {
-	// ENV読み取り
-	err := godotnev.Load(".env")
-	if err != nil {
-		fmt.Printf("読み込みに失敗しました: %v", err)
-	}
-
-	// 接続情報を設定
-	DBMS := "mysql"
-	USER := os.Getenv("DB_USER")
-	PASS := os.Getenv("DB_PASS")
-	// (localhost:3306ではなく)
-	HOST := "tcp(golang_demo_db:3306)"
-	DBNAME := os.Getenv("DB_NAME")
-
-	CONNECT := USER + ":" + PASS + "@" + HOST + "/" + DBNAME + "?parseTime=true"
-	// DBに接続
-	db, err = gorm.Open(DBMS, CONNECT)
-	if err != nil {
-		panic(err.Error())
-	}
-	// db.Close()
-	fmt.Println("ok!")
-}
-
 
 // マイグレーション
 func Migrate() {
-	connectDB()
+	ConnectDB()
 	db.AutoMigrate(&models.User{})
 	db.AutoMigrate(&models.Todo{})
 	fmt.Println("migrate success!")
 }
 
-
 // データ登録
 func SeedUser() {
-	connectDB()
+	ConnectDB()
 	var user models.User
 	for i := 1; i <= 10; i++ {
 		user = models.User{
-			Name: fmt.Sprintf("user_%v", i),
-			Email: fmt.Sprintf("test%v@email.com", i),
+			Name:     fmt.Sprintf("user_%v", i),
+			Email:    fmt.Sprintf("test%v@email.com", i),
 			Password: fmt.Sprintf("test%v", i),
 		}
 		db.Create(&user)
@@ -65,7 +33,7 @@ func SeedUser() {
 }
 
 func SeedTodo() {
-	connectDB()
+	ConnectDB()
 	var todo models.Todo
 	for i := 1; i <= 10; i++ {
 		todo = models.Todo{UserID: 1, Title: fmt.Sprintf("タイトル_%v", i), Content: fmt.Sprintf("内容_%v", i)}
@@ -75,41 +43,40 @@ func SeedTodo() {
 	fmt.Println("seeder success!")
 }
 
-
 // データ取得
-func GetUsers() []models.User{
+func GetUsers() []models.User {
 	var users []models.User
-	connectDB()
+	ConnectDB()
 	db.Find(&users)
 	defer db.Close()
 	return users
 }
-func GetUser(id int) models.User{
+func GetUser(id int) models.User {
 	var user models.User
-	connectDB()
+	ConnectDB()
 	db.First(&user, id)
 	defer db.Close()
 	return user
 }
 
-func GetLoginUser(email string, password string) models.User{
+func GetLoginUser(email string, password string) models.User {
 	var user models.User
-	connectDB()
+	ConnectDB()
 	db.Where("email = ?", email).Where("password = ?", password).First(&user)
 	defer db.Close()
 	return user
 }
 
-func GetTodos() []models.Todo{
+func GetTodos() []models.Todo {
 	var todos []models.Todo
-	connectDB()
+	ConnectDB()
 	db.Preload("User").Find(&todos)
 	defer db.Close()
 	return todos
 }
-func GetTodo(id int) models.Todo{
+func GetTodo(id int) models.Todo {
 	var todo models.Todo
-	connectDB()
+	ConnectDB()
 	db.First(&todo, id)
 	defer db.Close()
 	return todo
@@ -117,13 +84,13 @@ func GetTodo(id int) models.Todo{
 
 type Todo struct {
 	// jsonで型定義
-Title string `json:"title"`
+	Title   string `json:"title"`
 	Content string `json:"content"`
 }
 
 // データ登録
 func RegisterTodo(title string, content string) {
-	connectDB()
+	ConnectDB()
 	todo := Todo{Title: title, Content: content}
 	db.Create(&todo)
 	defer db.Close()
@@ -133,7 +100,7 @@ func RegisterTodo(title string, content string) {
 // データ更新
 func EditTodo(id int, title string, content string) {
 	var todo models.Todo
-	connectDB()
+	ConnectDB()
 	db.First(&todo, id)
 	db.Model(&todo).Updates(models.Todo{Title: title, Content: content})
 	defer db.Close()
@@ -143,7 +110,7 @@ func EditTodo(id int, title string, content string) {
 // データを削除
 func DeleteTodo(id int) {
 	var todo models.Todo
-	connectDB()
+	ConnectDB()
 	db.Delete(&todo, id)
 }
 
@@ -151,16 +118,16 @@ func DeleteTodo(id int) {
 func TodoToUser() {
 	// var todo models.Todo
 	var users []models.User
-	connectDB()
+	ConnectDB()
 	db.Preload("Todos").Find(&users)
 	// db.Find(&users)
 	fmt.Println(users)
 }
 
 // ログイン
-func Login(email string, password string) models.User{
+func Login(email string, password string) models.User {
 	var user models.User
-	connectDB()
+	ConnectDB()
 	db.Where("email = ?", email).Where("password = ?", password).First(&user)
 	return user
 }

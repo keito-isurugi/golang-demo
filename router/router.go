@@ -113,25 +113,6 @@ func middleware1(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// // CORSエラー回避用ミドルウェア
-// func CORS(next http.HandlerFunc) http.HandlerFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-// 		// クロスオリジン用にセット
-// 		w.Header().Set("Access-Control-Allow-Origin", "*")
-// 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-// 		w.Header().Set("Access-Control-Allow-Credentials", "true")
-// 		w.Header().Set("Access-Control-Allow-Methods","GET,PUT,POST,DELETE,UPDATE,OPTIONS")
-//     w.Header().Set("Content-Type", "application/json")
-
-// 		// preflight用に200でいったん返す
-// 		if r.Method == "OPTIONS" {
-// 			w.WriteHeader(http.StatusOK)
-// 			return
-// 		}
-// 		next.ServeHTTP(w, r)
-// 	}
-// }
-
 func Router() {
 	http.HandleFunc("/", homePage)
 
@@ -156,29 +137,6 @@ func Router() {
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
-
-// type Router struct{}
-
-// func NewRouter() http.Handler {
-// 	r := &Router{}
-// 	return r
-// }
-
-// func (router *Router) ServerHTTP(w http.ResponseWriter, r *http.Request) {
-// endpoint, param := SeparatePath(...)
-
-// 	switch endpoint {
-// 	case "/users":
-// 		switch r.Method {
-// 		case http.MethodGet:
-// 			UserHandler(w, r, param)
-// 		default:
-// 			MethodNotAllowedHandler(w, r)
-// 		}
-// 	default:
-// 		NotFoundHandler(w, r)
-// 	}
-// }
 
 func UserHandler(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/users/")
