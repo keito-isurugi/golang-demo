@@ -17,11 +17,14 @@ import (
 
 
 func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Welcome to tha HomaPage!")
+	fmt.Fprintf(w, "Welcome to the HomaPage!")
 	fmt.Println("Endpoint Hit: homePage")
 }
-func dbMigrate(w http.ResponseWriter, r *http.Request) {
-	db.Migrate()
+func dbMigrateUser(w http.ResponseWriter, r *http.Request) {
+	db.MigrateUser()
+}
+func dbMigrateTodo(w http.ResponseWriter, r *http.Request) {
+	db.MigrateTodo()
 }
 func dbSeedUser(w http.ResponseWriter, r *http.Request) {
 	db.SeedUser()
@@ -131,7 +134,8 @@ func Router() {
 	// http.HandleFunc("/api/login", middleware.CORS(loginHndler))
 	
 	// マイグレーション, シード
-	http.HandleFunc("/db/migrate", dbMigrate)
+	http.HandleFunc("/db/migrate/user", dbMigrateUser)
+	http.HandleFunc("/db/migrate/todo", dbMigrateTodo)
 	http.HandleFunc("/db/seed/user", dbSeedUser)
 	http.HandleFunc("/db/seed/todo", dbSeedTodo)
 

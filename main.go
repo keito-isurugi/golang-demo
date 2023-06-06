@@ -9,6 +9,7 @@ import (
 
 func main() {
 	// auth.Auth()
-	router.RouterPokemon()
+	// router.RouterPokemon()
+	router.Router()
 	// demo.Hoge()
 }

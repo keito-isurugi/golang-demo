@@ -11,6 +11,7 @@
 - gormでdb登録、取得、更新、削除
 - gormでマイグレーション
 - Docker+airでホットリロード
+  - docker compse up golang_demoで起動
 - ミドルウェア作成
 - net/httpでapiサーバー(CRUD)
 - gormでリレーション
